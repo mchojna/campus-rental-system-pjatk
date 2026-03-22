@@ -1,8 +1,11 @@
 namespace CampusRentalSystem.Models.Users;
 
 public class Student(string firstName, string lastName)
-    : User(firstName, lastName)
+    : User(firstName, lastName, UserType.Student, 2)
 {
-    public static int _maxActiveRentals = 2;
-    public static UserType _userType = UserType.Student;
+    public override string ToString()
+    {
+        return
+            $"Student (Id={Id}, FirstName={FirstName}, LastName={LastName}, ActiveRentals={ActiveRentals}, MaxActiveRentals={MaxActiveRentals}, UserType={UserType})";
+    }
 }

@@ -11,10 +11,11 @@ public class Laptop(
     string operatingSystem)
     : Device(name, brand, weight, purchaseDate)
 {
-    public static DeviceType _deviceType = DeviceType.Laptop;
+    public static readonly DeviceType DeviceType = DeviceType.Laptop;
 
-    public string ProcessorModel { get; set; } = processorModel;
-    public string RamCapacity { get; set; } = ramCapacity;
-    public string StorageCapacity { get; set; } = storageCapacity;
-    public string OperatingSystem { get; set; } = operatingSystem;
+    public override string ToString()
+    {
+        return
+            $"Laptop (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, ProcessorModel={processorModel}, RamCapacity={ramCapacity}, StorageCapacity={storageCapacity}, OperatingSystem={operatingSystem})";
+    }
 }
