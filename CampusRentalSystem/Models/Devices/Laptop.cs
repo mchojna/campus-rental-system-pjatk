@@ -11,10 +11,10 @@ public class Laptop(
     string operatingSystem)
     : Device(name, brand, weight, purchaseDate)
 {
-    private static DeviceType _deviceType = DeviceType.Laptop;
+    public static DeviceType _deviceType = DeviceType.Laptop;
 
-    protected string ProcessorModel { get; set; } = processorModel;
-    protected string RamCapacity { get; set; } = ramCapacity;
-    protected string StorageCapacity { get; set; } = storageCapacity;
-    protected string OperatingSystem { get; set; } = operatingSystem;
+    public string ProcessorModel { get; set; } = processorModel;
+    public string RamCapacity { get; set; } = ramCapacity;
+    public string StorageCapacity { get; set; } = storageCapacity;
+    public string OperatingSystem { get; set; } = operatingSystem;
 }

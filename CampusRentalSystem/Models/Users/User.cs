@@ -11,9 +11,9 @@ public abstract class User
         FirstName = firstName;
         LastName = lastName;
     }
-    
-    protected int Id { get; set; }
-    protected string FirstName { get; set; }
-    protected string LastName { get; set; }
-    protected int ActiveRentals { get; set; } = 0;
+
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public int ActiveRentals { get; set; } = 0;
 }

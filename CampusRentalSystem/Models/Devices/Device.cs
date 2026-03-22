@@ -14,10 +14,10 @@ public class Device
         PurchaseDate = purchaseDate;
     }
 
-    protected int Id { get; set; }
-    protected string Name { get; set; }
-    protected string Brand { get; set; }
-    protected double Weight { get; set; }
-    protected DateOnly PurchaseDate { get; set; }
-    protected DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Available;
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Brand { get; set; }
+    public double Weight { get; set; }
+    public DateOnly PurchaseDate { get; set; }
+    public DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Available;
 }

@@ -11,10 +11,10 @@ public class Projector(
     string contrast)
     : Device(name, brand, weight, purchaseDate)
 {
-    private static DeviceType _deviceType = DeviceType.Projector;
+    public static DeviceType _deviceType = DeviceType.Projector;
 
-    protected string DisplayTechnology { get; set; } = displayTechnology;
-    protected string Resolution { get; set; } = resolution;
-    protected string Brightness { get; set; } = brightness;
-    protected string Contrast { get; set; } = contrast;
+    public string DisplayTechnology { get; set; } = displayTechnology;
+    public string Resolution { get; set; } = resolution;
+    public string Brightness { get; set; } = brightness;
+    public string Contrast { get; set; } = contrast;
 }

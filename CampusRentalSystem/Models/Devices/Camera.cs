@@ -11,10 +11,10 @@ public class Camera(
     string sensorType)
     : Device(name, brand, weight, purchaseDate)
 {
-    private static DeviceType _deviceType = DeviceType.Camera;
+    public static DeviceType _deviceType = DeviceType.Camera;
 
-    protected double BaseAperture { get; set; } = baseAperture;
-    protected double BaseShutterSpeed { get; set; } = baseShutterSpeed;
-    protected double BaseIso { get; set; } = baseIso;
+    public double BaseAperture { get; set; } = baseAperture;
+    public double BaseShutterSpeed { get; set; } = baseShutterSpeed;
+    public double BaseIso { get; set; } = baseIso;
     public string SensorType { get; set; } = sensorType;
 }
