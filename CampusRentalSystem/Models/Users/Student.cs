@@ -6,6 +6,7 @@ public class Student(string firstName, string lastName)
     public override string ToString()
     {
         return
-            $"Student (Id={Id}, FirstName={FirstName}, LastName={LastName}, ActiveRentals={ActiveRentals}, MaxActiveRentals={MaxActiveRentals}, UserType={UserType})";
+            $"Student (Id={Id}, FirstName={FirstName}, LastName={LastName}, ActiveRentals={ActiveRentals}, MaxActiveRentals={MaxActiveRentals}, " +
+            $"UserType={UserType})";
     }
 }

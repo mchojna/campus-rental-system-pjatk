@@ -4,7 +4,7 @@ public class Device
 {
     private static int _globalId = 0;
 
-    protected Device(string name, string brand, double weight, DateOnly purchaseDate)
+    protected Device(string name, string brand, double weight, DateOnly purchaseDate, DeviceType deviceType)
     {
         Id = _globalId++;
 
@@ -12,6 +12,7 @@ public class Device
         Brand = brand;
         Weight = weight;
         PurchaseDate = purchaseDate;
+        DeviceType = deviceType;
     }
 
     public override bool Equals(object? obj)
@@ -40,5 +41,6 @@ public class Device
     protected readonly string Brand;
     protected readonly double Weight;
     protected readonly DateOnly PurchaseDate;
+    protected readonly DeviceType DeviceType;
     public DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Available;
 }

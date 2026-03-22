@@ -9,13 +9,12 @@ public class Projector(
     string resolution,
     string brightness,
     string contrast)
-    : Device(name, brand, weight, purchaseDate)
+    : Device(name, brand, weight, purchaseDate, DeviceType.Projector)
 {
-    public static readonly DeviceType DeviceType = DeviceType.Projector;
-
     public override string ToString()
     {
         return
-            $"Projector (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, DisplayTechnology={displayTechnology}, Resolution={resolution}, Brightness={brightness}, Contrast={contrast})";
+            $"Projector (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, " +
+            $"DeviceType={DeviceType}, DisplayTechnology={displayTechnology}, Resolution={resolution}, Brightness={brightness}, Contrast={contrast})";
     }
 }

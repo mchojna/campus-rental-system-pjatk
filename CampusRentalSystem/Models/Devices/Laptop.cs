@@ -9,13 +9,12 @@ public class Laptop(
     string ramCapacity,
     string storageCapacity,
     string operatingSystem)
-    : Device(name, brand, weight, purchaseDate)
+    : Device(name, brand, weight, purchaseDate, DeviceType.Laptop)
 {
-    public static readonly DeviceType DeviceType = DeviceType.Laptop;
-
     public override string ToString()
     {
         return
-            $"Laptop (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, ProcessorModel={processorModel}, RamCapacity={ramCapacity}, StorageCapacity={storageCapacity}, OperatingSystem={operatingSystem})";
+            $"Laptop (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, " +
+            $"DeviceType={DeviceType}, ProcessorModel={processorModel}, RamCapacity={ramCapacity}, StorageCapacity={storageCapacity}, OperatingSystem={operatingSystem})";
     }
 }
