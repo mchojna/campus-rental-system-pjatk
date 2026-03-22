@@ -16,6 +16,6 @@ public class Laptop(
     public override string ToString()
     {
         return
-            $"Projector (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, ProcessorModel={processorModel}, RamCapacity={ramCapacity}, StorageCapacity={storageCapacity}, OperatingSystem={operatingSystem})";
+            $"Laptop (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, ProcessorModel={processorModel}, RamCapacity={ramCapacity}, StorageCapacity={storageCapacity}, OperatingSystem={operatingSystem})";
     }
 }
