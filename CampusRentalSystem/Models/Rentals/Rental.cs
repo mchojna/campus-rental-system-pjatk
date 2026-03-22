@@ -5,16 +5,25 @@ namespace CampusRentalSystem.Models.Rentals;
 
 public class Rental
 {
-    public Rental(User user, Device device, DateOnly rentedFrom, DateOnly rentedTo)
+    private static int _globalId = 0;
+    
+    public Rental(User user, Device device, DateOnly rentalDate, DateOnly expectedReturnDate)
     {
+        Id = _globalId++;
+        
         User = user;
         Device = device;
-        RentedFrom = rentedFrom;
-        RentedTo = rentedTo;
+        RentalDate = rentalDate;
+        ExpectedReturnDate = expectedReturnDate;
     }
 
-    public User User { get; set; }
-    public Device Device { get; set; }
-    public DateOnly RentedFrom { get; set; } 
-    public DateOnly RentedTo { get; set; } 
+    protected readonly int Id;
+    public User User { get; }
+    public Device Device { get; }
+    public DateOnly RentalDate { get; }
+    public DateOnly ExpectedReturnDate { get; }
+    public DateOnly? ActualReturnDate { get; set; } = null;
+
+    // faktyczny zwrot / kara
+    // jak dlugo
 }

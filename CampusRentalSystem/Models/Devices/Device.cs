@@ -14,10 +14,31 @@ public class Device
         PurchaseDate = purchaseDate;
     }
 
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Brand { get; set; }
-    public double Weight { get; set; }
-    public DateOnly PurchaseDate { get; set; }
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+
+        if (GetType() != obj.GetType()) return false;
+
+        var other = (Device)obj;
+        return Id == other.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id);
+    }
+
+    public override string ToString()
+    {
+        return
+            $"Device (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus})";
+    }
+
+    public readonly int Id;
+    protected readonly string Name;
+    protected readonly string Brand;
+    protected readonly double Weight;
+    protected readonly DateOnly PurchaseDate;
     public DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Available;
 }

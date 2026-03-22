@@ -11,10 +11,11 @@ public class Camera(
     string sensorType)
     : Device(name, brand, weight, purchaseDate)
 {
-    public static DeviceType _deviceType = DeviceType.Camera;
+    public static readonly DeviceType DeviceType = DeviceType.Camera;
 
-    public double BaseAperture { get; set; } = baseAperture;
-    public double BaseShutterSpeed { get; set; } = baseShutterSpeed;
-    public double BaseIso { get; set; } = baseIso;
-    public string SensorType { get; set; } = sensorType;
+    public override string ToString()
+    {
+        return
+            $"Projector (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, BaseAperture={baseAperture}, BaseShutterSpeed={baseShutterSpeed}, BaseIso={baseIso}, SensorType={sensorType})";
+    }
 }

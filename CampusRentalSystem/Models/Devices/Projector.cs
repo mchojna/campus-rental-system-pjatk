@@ -11,10 +11,11 @@ public class Projector(
     string contrast)
     : Device(name, brand, weight, purchaseDate)
 {
-    public static DeviceType _deviceType = DeviceType.Projector;
+    public static readonly DeviceType DeviceType = DeviceType.Projector;
 
-    public string DisplayTechnology { get; set; } = displayTechnology;
-    public string Resolution { get; set; } = resolution;
-    public string Brightness { get; set; } = brightness;
-    public string Contrast { get; set; } = contrast;
+    public override string ToString()
+    {
+        return
+            $"Projector (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus}, DeviceType={DeviceType}, DisplayTechnology={displayTechnology}, Resolution={resolution}, Brightness={brightness}, Contrast={contrast})";
+    }
 }
