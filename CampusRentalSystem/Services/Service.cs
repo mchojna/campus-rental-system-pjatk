@@ -1,10 +1,11 @@
+using CampusRentalSystem.Exceptions;
 using CampusRentalSystem.Models.Devices;
 using CampusRentalSystem.Models.Rentals;
 using CampusRentalSystem.Models.Users;
 
 namespace CampusRentalSystem.Services;
 
-public class Service
+public class Service(PenaltyCalculator penaltyCalculator)
 {
     private Dictionary<int, User> Users { get; } = [];
     private Dictionary<int, Device> Devices { get; } = [];
@@ -12,216 +13,131 @@ public class Service
 
     public void AddNewUser(User user)
     {
-        if (!Users.TryAdd(user.Id, user))
-        {
-            Console.WriteLine($"[INFO]: User with Id={user.Id} is already added to the system.");
-            return;
-        }
-
-        Console.WriteLine($"[INFO]: User with Id={user.Id} has been added to the system.");
+        if (!Users.TryAdd(user.Id, user)) throw new AlreadyExistsException($"User with Id={user.Id} already exists.");
     }
 
     public void AddNewDevice(Device device)
     {
         if (!Devices.TryAdd(device.Id, device))
-        {
-            Console.WriteLine($"[INFO]: Device with Id={device.Id} is already added to the system.");
-            return;
-        }
-
-        Console.WriteLine($"[INFO]: Device with Id={device.Id} has been added to the system.");
+            throw new AlreadyExistsException($"Device with Id={device.Id} already exists.");
     }
 
-    public void ShowAllDevices()
+    public IReadOnlyList<Device> GetAllDevices()
     {
-        var devices = Devices
-            .Select(i => i.Value)
-            .ToList();
-        if (!devices.Any())
-        {
-            Console.WriteLine("[INFO]: No devices found in the system.");
-            return;
-        }
-
-        Console.WriteLine("[INFO]: All devices:");
-        devices.ForEach(i => Console.WriteLine($"\t{i}"));
+        return Devices.Values.ToList();
     }
 
-    public void ShowAvailableDevices()
+    public IReadOnlyList<Device> GetAvailableDevices()
     {
-        var devices = Devices
-            .Select(i => i.Value)
-            .ToList();
-        if (!devices.Any())
-        {
-            Console.WriteLine("[INFO]: No devices found in the system.");
-            return;
-        }
-
-        var availableDevices = devices
+        return Devices.Values
             .Where(i => i.DeviceStatus == DeviceStatus.Available)
             .ToList();
-        if (!availableDevices.Any())
-        {
-            Console.WriteLine("[INFO]: No available devices found at the moment.");
-            return;
-        }
-
-        Console.WriteLine("[INFO]: All available devices:");
-        availableDevices.ForEach(i => Console.WriteLine($"\t{i}"));
     }
 
-    public void ShowUsersActiveRentals(User user)
+    public IReadOnlyList<Rental> GetUsersActiveRentals(int userId)
     {
-        var activeRentals = Rentals
-            .Where(i => i.User.Equals(user) && i.ActualReturnDate is null)
+        if (!Users.ContainsKey(userId)) throw new NotFoundException($"User with Id={userId} does not exist.");
+
+        RefreshOpenRentalStatuses(DateOnly.FromDateTime(DateTime.Today));
+
+        return Rentals
+            .Where(i => i.User.Id == userId && i.Status != RentalStatus.Returned)
             .ToList();
-
-        if (activeRentals.Count == 0)
-        {
-            Console.WriteLine($"[INFO]: User {user.Id} has no active rentals.");
-            return;
-        }
-
-        Console.WriteLine($"[INFO]: Active rentals of user {user.Id}:");
-        activeRentals.ForEach(i => Console.WriteLine($"\t{i}"));
     }
 
-    public void ShowOverdueRentals(DateOnly currentDate)
+    public IReadOnlyList<Rental> GetOverdueRentals(DateOnly currentDate)
     {
-        var overdueRentals = Rentals
-            .Where(i => i.ActualReturnDate is null && i.ExpectedReturnDate < currentDate)
+        RefreshOpenRentalStatuses(currentDate);
+
+        return Rentals
+            .Where(i => i.Status == RentalStatus.Overdue)
             .ToList();
-
-        if (overdueRentals.Count == 0)
-        {
-            Console.WriteLine("[INFO]: No overdue rentals in the system.");
-            return;
-        }
-
-        Console.WriteLine("[INFO]: Overdue rentals:");
-        overdueRentals.ForEach(i => Console.WriteLine($"\t{i}"));
     }
 
-    public void GenerateReport()
+    public (int TotalUsers, int TotalDevices, int AvailableDevices, int DamagedDevices, int TotalActiveRentals)
+        GenerateReport()
     {
-        Console.WriteLine("[INFO]: Generated report:");
-        Console.WriteLine($"\tTotal users: {Users.Count}");
-        Console.WriteLine($"\tTotal devices: {Devices.Count}");
-        Console.WriteLine(
-            $"\tAvailable devices: {Devices.Values.Count(d => d.DeviceStatus == DeviceStatus.Available)}");
-        Console.WriteLine($"\tDamaged devices: {Devices.Values.Count(d => d.DeviceStatus == DeviceStatus.Damaged)}");
-        Console.WriteLine($"\tTotal active rentals: {Rentals.Count(r => r.ActualReturnDate is null)}");
+        return (
+            TotalUsers: Users.Count,
+            TotalDevices: Devices.Count,
+            AvailableDevices: Devices.Values.Count(d => d.DeviceStatus == DeviceStatus.Available),
+            DamagedDevices: Devices.Values.Count(d => d.DeviceStatus == DeviceStatus.Damaged),
+            TotalActiveRentals: Rentals.Count(r => r.Status != RentalStatus.Returned)
+        );
     }
 
-    public void RentDevice(int userId, int deviceId, DateOnly rentalDate, DateOnly expectedReturnDate)
+    public Rental RentDevice(int userId, int deviceId, DateOnly rentalDate, DateOnly expectedReturnDate)
     {
         if (!Users.TryGetValue(userId, out var user))
-        {
-            Console.WriteLine($"[INFO]: User with Id={userId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"User with Id={userId} does not exist.");
 
         if (!Devices.TryGetValue(deviceId, out var device))
-        {
-            Console.WriteLine($"[INFO]: Device with Id={deviceId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"Device with Id={deviceId} does not exist.");
 
         if (user.ActiveRentals >= user.MaxActiveRentals)
-        {
-            Console.WriteLine(
-                $"[INFO]: User with Id={user.Id} has reached the rental limit ({user.MaxActiveRentals}).");
-            return;
-        }
+            throw new RentalLimitExceededException(
+                $"User with Id={user.Id} reached rental limit ({user.MaxActiveRentals}).");
 
         if (device.DeviceStatus != DeviceStatus.Available)
-        {
-            Console.WriteLine($"[ERROR]: Device with Id={device.Id} is unavailable for rental.");
-            return;
-        }
+            throw new DeviceUnavailableException($"Device with Id={device.Id} is unavailable for rental.");
 
-        Rentals.Add(new Rental(user, device, rentalDate, expectedReturnDate));
+        var rental = new Rental(user, device, rentalDate, expectedReturnDate);
+        Rentals.Add(rental);
         device.DeviceStatus = DeviceStatus.Unavailable;
         user.ActiveRentals += 1;
-        Console.WriteLine(
-            $"[INFO]: User with Id={user.Id} rented device with Id={device.Id} from {rentalDate} to {expectedReturnDate}.");
+
+        return rental;
     }
 
-    public void ReturnDevice(int userId, int deviceId, DateOnly actualReturnDate)
+    public double ReturnDevice(int userId, int deviceId, DateOnly actualReturnDate)
     {
         if (!Users.TryGetValue(userId, out var user))
-        {
-            Console.WriteLine($"[ERROR]: User with Id={userId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"User with Id={userId} does not exist.");
 
         if (!Devices.TryGetValue(deviceId, out var device))
-        {
-            Console.WriteLine($"[ERROR]: Device with Id={deviceId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"Device with Id={deviceId} does not exist.");
 
         var rental = Rentals
-            .FirstOrDefault(i => i.User.Id == userId && i.Device.Id == deviceId && i.ActualReturnDate is null);
+            .FirstOrDefault(i => i.User.Id == userId && i.Device.Id == deviceId && i.Status != RentalStatus.Returned);
 
         if (rental is null)
-        {
-            Console.WriteLine(
-                $"[ERROR]: Active rental for user with Id={userId} and device with Id={deviceId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException(
+                $"Active rental for user with Id={userId} and device with Id={deviceId} does not exist.");
 
-        rental.ActualReturnDate = actualReturnDate;
-        if (rental.ActualReturnDate > rental.ExpectedReturnDate)
-        {
-            var daysLate = rental.ActualReturnDate.Value.DayNumber - rental.ExpectedReturnDate.DayNumber;
-            var penalty = daysLate * 5.0;
-            Console.WriteLine($"[INFO]: Device returned late by {daysLate} days. Penalty to pay: {penalty} PLN.");
-        }
-        else
-        {
-            Console.WriteLine($"[INFO]: Device returned on time. No penalty.");
-        }
+        rental.MarkReturned(actualReturnDate);
+        var penalty = penaltyCalculator.CalculatePenalty(rental.ExpectedReturnDate, actualReturnDate);
 
         device.DeviceStatus = DeviceStatus.Available;
         user.ActiveRentals -= 1;
-        Console.WriteLine($"[INFO]: User {userId} successfully returned device {deviceId}.");
+
+        return penalty;
     }
 
     public void SendToRepair(int deviceId)
     {
         if (!Devices.TryGetValue(deviceId, out var device))
-        {
-            Console.WriteLine($"[INFO]: Device with Id={deviceId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"Device with Id={deviceId} does not exist.");
 
         if (device.DeviceStatus != DeviceStatus.Available)
-        {
-            Console.WriteLine($"[INFO]: Device with Id={deviceId} is not available and cannot be sent to repair.");
-            return;
-        }
+            throw new InvalidDeviceStateException(
+                $"Device with Id={deviceId} is not available and cannot be sent to repair.");
 
         device.DeviceStatus = DeviceStatus.Damaged;
-        Console.WriteLine($"[INFO]: Device with Id={deviceId} has been sent to repair.");
     }
 
     public void CollectFromRepair(int deviceId)
     {
         if (!Devices.TryGetValue(deviceId, out var device))
-        {
-            Console.WriteLine($"[INFO]: Device with Id={deviceId} does not exist in the system.");
-            return;
-        }
+            throw new NotFoundException($"Device with Id={deviceId} does not exist.");
 
         if (device.DeviceStatus != DeviceStatus.Damaged)
-        {
-            Console.WriteLine($"[INFO]: Device with Id={deviceId} is not a damaged device.");
-            return;
-        }
+            throw new InvalidDeviceStateException($"Device with Id={deviceId} is not a damaged device.");
 
         device.DeviceStatus = DeviceStatus.Available;
-        Console.WriteLine($"[INFO]: Device with Id={deviceId} has been collected from repair and is available.");
+    }
+
+    private void RefreshOpenRentalStatuses(DateOnly currentDate)
+    {
+        foreach (var rental in Rentals.Where(r => r.Status != RentalStatus.Returned)) rental.RefreshStatus(currentDate);
     }
 }
