@@ -7,7 +7,7 @@ public class Camera(
     DateOnly purchaseDate,
     double baseAperture,
     double baseShutterSpeed,
-    double baseIso,
+    int baseIso,
     string sensorType)
     : Device(name, brand, weight, purchaseDate, DeviceType.Camera)
 {
