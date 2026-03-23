@@ -4,7 +4,7 @@ public class PenaltyCalculator
 {
     private const double DailyPenaltyRate = 5.0;
 
-    public double CalculatePenalty(DateOnly expectedReturnDate, DateOnly actualReturnDate)
+    public static double CalculatePenalty(DateOnly expectedReturnDate, DateOnly actualReturnDate)
     {
         if (actualReturnDate <= expectedReturnDate) return 0.0;
 

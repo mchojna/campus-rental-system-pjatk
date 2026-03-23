@@ -23,6 +23,16 @@ service.AddNewDevice(laptop2);
 service.AddNewDevice(projector1);
 service.AddNewDevice(camera1);
 
+// Try to add duplicate device
+try
+{
+    service.AddNewDevice(laptop1);
+}
+catch (DomainException ex)
+{
+    Console.WriteLine($"\n{ex.Message}");
+}
+
 // Add users
 var student = new Student("Jan", "Kowalski");
 var employee = new Employee("Anna", "Nowak");
@@ -37,30 +47,20 @@ try
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
-Console.WriteLine("\n[INFO] ALL DEVICES: ");
+Console.WriteLine("\nAll device: ");
 PrintCollection(service.GetAllDevices());
 
-Console.WriteLine("\n[INFO] AVAILABLE DEVICES: ");
+Console.WriteLine("\nAvailable devices: ");
 PrintCollection(service.GetAvailableDevices());
 
 // Rent device
 var rentalDate = new DateOnly(2026, 3, 1);
 var expectedReturn = new DateOnly(2026, 3, 7);
 service.RentDevice(student.Id, laptop1.Id, rentalDate, expectedReturn);
-Console.WriteLine($"\n[INFO] Student with Id={student.Id} rented laptop with Id={laptop1.Id}.");
-
-// Try to add duplicate device
-try
-{
-    service.AddNewDevice(laptop1);
-}
-catch (DomainException ex)
-{
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
-}
+Console.WriteLine($"\nStudent with Id={student.Id} rented laptop with Id={laptop1.Id}.");
 
 // Try to rent unavailable device
 try
@@ -69,26 +69,27 @@ try
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
 // Send device to repair and try to rent it
 service.SendToRepair(projector1.Id);
-Console.WriteLine($"\n[INFO] Device with Id={projector1.Id} sent to repair.");
+Console.WriteLine($"\nDevice with Id={projector1.Id} sent to repair.");
 try
 {
     service.RentDevice(employee.Id, projector1.Id, rentalDate, expectedReturn);
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
 // Collect device from repair and rent again
 service.CollectFromRepair(projector1.Id);
-Console.WriteLine($"\n[INFO] Device with Id={projector1.Id} collected from repair.");
+Console.WriteLine($"\nDevice with Id={projector1.Id} collected from repair.");
+
 service.RentDevice(employee.Id, projector1.Id, new DateOnly(2026, 3, 8), new DateOnly(2026, 3, 11));
-Console.WriteLine($"\n[INFO] Employee with Id={employee.Id} rented projector with Id={projector1.Id}.");
+Console.WriteLine($"\nEmployee with Id={employee.Id} rented projector with Id={projector1.Id}.");
 
 // Try to exceed rental limit
 service.RentDevice(student.Id, laptop2.Id, rentalDate, expectedReturn);
@@ -98,17 +99,17 @@ try
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
 // Return on time
 var onTimeReturnPenalty = service.ReturnDevice(student.Id, laptop1.Id, new DateOnly(2026, 3, 7));
-Console.WriteLine($"\n[INFO] On-time return. Penalty: {onTimeReturnPenalty} PLN");
+Console.WriteLine($"\nOn-time return. Penalty: {onTimeReturnPenalty} PLN");
 
 // Late return with penalty
 service.RentDevice(employee.Id, camera1.Id, new DateOnly(2026, 3, 10), new DateOnly(2026, 3, 12));
 var lateReturnPenalty = service.ReturnDevice(employee.Id, camera1.Id, new DateOnly(2026, 3, 15));
-Console.WriteLine($"\n[INFO] Late return. Penalty: {lateReturnPenalty} PLN");
+Console.WriteLine($"\nLate return. Penalty: {lateReturnPenalty} PLN");
 
 // Try to return device that is not actively rented
 try
@@ -117,17 +118,17 @@ try
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
 // Return the projector to clean up active rentals
 var projectorPenalty = service.ReturnDevice(employee.Id, projector1.Id, new DateOnly(2026, 3, 12));
-Console.WriteLine($"\n[INFO] Projector return. Penalty: {projectorPenalty} PLN");
+Console.WriteLine($"\nProjector return. Penalty: {projectorPenalty} PLN");
 
-Console.WriteLine("\n[INFO] Student active rentals:");
+Console.WriteLine("\nStudent active rentals:");
 PrintCollection(service.GetUsersActiveRentals(student.Id));
 
-Console.WriteLine("\n[INFO] Overdue rentals (2026-03-20):");
+Console.WriteLine("\nOverdue rentals (2026-03-20):");
 PrintCollection(service.GetOverdueRentals(new DateOnly(2026, 3, 20)));
 
 // Try to get rentals for a missing user
@@ -137,12 +138,12 @@ try
 }
 catch (DomainException ex)
 {
-    Console.WriteLine($"\n[ERROR] {ex.Message}");
+    Console.WriteLine($"\n{ex.Message}");
 }
 
 // Show final report
 var report = service.GenerateReport();
-Console.WriteLine("\n[INFO] Generated report:");
+Console.WriteLine("\nGenerated report:");
 PrintReport(report);
 
 return;
@@ -152,15 +153,14 @@ static void PrintCollection<T>(IEnumerable<T> items)
     var materialized = items.ToList();
     if (materialized.Count == 0)
     {
-        Console.WriteLine("\n[INFO] No data.");
+        Console.WriteLine("\nNo data.");
         return;
     }
 
     materialized.ForEach(i => Console.WriteLine($"\t{i}"));
 }
 
-static void PrintReport(
-    (int TotalUsers, int TotalDevices, int AvailableDevices, int DamagedDevices, int TotalActiveRentals) report)
+static void PrintReport((int TotalUsers, int TotalDevices, int AvailableDevices, int DamagedDevices, int TotalActiveRentals) report)
 {
     Console.WriteLine($"\tTotal users: {report.TotalUsers}");
     Console.WriteLine($"\tTotal devices: {report.TotalDevices}");
