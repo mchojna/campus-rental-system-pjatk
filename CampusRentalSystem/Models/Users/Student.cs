@@ -1,8 +1,9 @@
 namespace CampusRentalSystem.Models.Users;
 
 public class Student(string firstName, string lastName)
-    : User(firstName, lastName, UserType.Student, 2)
+    : User(firstName, lastName, UserType.Student, MaxActiveRentals)
 {
+    private const int MaxActiveRentals = 2;
     public override string ToString()
     {
         return

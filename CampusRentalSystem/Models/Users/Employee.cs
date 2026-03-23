@@ -1,8 +1,10 @@
 namespace CampusRentalSystem.Models.Users;
 
 public class Employee(string firstName, string lastName)
-    : User(firstName, lastName, UserType.Employee, 5)
+    : User(firstName, lastName, UserType.Employee, MaxActiveRentals)
 {
+    private const int MaxActiveRentals = 5;
+
     public override string ToString()
     {
         return

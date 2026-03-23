@@ -34,10 +34,10 @@ public abstract class User
         return $"User (Id={Id}, FirstName={FirstName}, LastName={LastName}, ActiveRentals={ActiveRentals})";
     }
 
-    public readonly int Id;
+    public int Id { get; }
     protected readonly string FirstName;
     protected readonly string LastName;
-    public readonly UserType UserType;
-    public readonly int MaxActiveRentals;
+    public UserType UserType { get; }
+    public int MaxActiveRentals { get; }
     public int ActiveRentals { get; set; } = 0;
 }
