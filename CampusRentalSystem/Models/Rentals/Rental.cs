@@ -23,17 +23,8 @@ public class Rental
     public Device Device { get; }
     public DateOnly RentalDate { get; }
     public DateOnly ExpectedReturnDate { get; }
-    public DateOnly? ActualReturnDate { get; private set; } = null;
-    public RentalStatus Status { get; private set; }
-
-    public void RefreshStatus(DateOnly currentDate)
-    {
-        if (Status == RentalStatus.Returned) return;
-
-        Status = currentDate > ExpectedReturnDate
-            ? RentalStatus.Overdue
-            : RentalStatus.Active;
-    }
+    public DateOnly? ActualReturnDate { get; set; } = null;
+    public RentalStatus Status { get; set; }
 
     public void MarkReturned(DateOnly actualReturnDate)
     {

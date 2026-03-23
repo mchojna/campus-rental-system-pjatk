@@ -166,7 +166,7 @@ public class Service(PenaltyCalculator penaltyCalculator)
     {
         foreach (var rental in Rentals.Where(r => r.Status != RentalStatus.Returned))
         {
-            rental.RefreshStatus(currentDate);
+            rental.Status = currentDate > rental.ExpectedReturnDate ? RentalStatus.Overdue : RentalStatus.Active;
         }
     }
 }
