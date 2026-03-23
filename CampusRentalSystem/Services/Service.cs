@@ -39,14 +39,14 @@ public class Service(PenaltyCalculator penaltyCalculator)
             .ToList();
     }
 
-    public IReadOnlyList<Rental> GetUsersActiveRentals(int userId)
+    public IReadOnlyList<Rental> GetUsersActiveRentals(int userId, DateOnly currentDate)
     {
         if (!Users.ContainsKey(userId))
         {
             throw new NotFoundException($"User with Id={userId} does not exist.");
         }
 
-        RefreshOpenRentalStatuses(DateOnly.FromDateTime(DateTime.Today));
+        RefreshOpenRentalStatuses(currentDate);
 
         return Rentals
             .Where(i => i.User.Id == userId && i.Status != RentalStatus.Returned)
@@ -103,7 +103,7 @@ public class Service(PenaltyCalculator penaltyCalculator)
         return rental;
     }
 
-    public double ReturnDevice(int userId, int deviceId, DateOnly actualReturnDate)
+    public decimal ReturnDevice(int userId, int deviceId, DateOnly actualReturnDate)
     {
         if (!Users.TryGetValue(userId, out var user))
         {
@@ -123,8 +123,8 @@ public class Service(PenaltyCalculator penaltyCalculator)
             throw new NotFoundException($"Active rental for user with Id={userId} and device with Id={deviceId} does not exist.");
         }
         
-        rental.MarkReturned(actualReturnDate);
-        var penalty = PenaltyCalculator.CalculatePenalty(rental.ExpectedReturnDate, actualReturnDate);
+        var penalty = penaltyCalculator.CalculatePenalty(rental.ExpectedReturnDate, actualReturnDate);
+        rental.MarkReturned(actualReturnDate, penalty);
 
         device.DeviceStatus = DeviceStatus.Available;
         user.ActiveRentals -= 1;

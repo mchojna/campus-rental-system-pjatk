@@ -126,7 +126,7 @@ var projectorPenalty = service.ReturnDevice(employee.Id, projector1.Id, new Date
 Console.WriteLine($"\nProjector return. Penalty: {projectorPenalty} PLN");
 
 Console.WriteLine("\nStudent active rentals:");
-PrintCollection(service.GetUsersActiveRentals(student.Id));
+PrintCollection(service.GetUsersActiveRentals(student.Id, new DateOnly(2026, 3, 20)));
 
 Console.WriteLine("\nOverdue rentals (2026-03-20):");
 PrintCollection(service.GetOverdueRentals(new DateOnly(2026, 3, 20)));
@@ -134,7 +134,7 @@ PrintCollection(service.GetOverdueRentals(new DateOnly(2026, 3, 20)));
 // Try to get rentals for a missing user
 try
 {
-    PrintCollection(service.GetUsersActiveRentals(999));
+    PrintCollection(service.GetUsersActiveRentals(999, new DateOnly(2026, 3, 20)));
 }
 catch (DomainException ex)
 {
