@@ -1,6 +1,6 @@
 namespace CampusRentalSystem.Models.Devices;
 
-public class Device
+public abstract class Device
 {
     private static int _globalId = 0;
 
@@ -36,7 +36,7 @@ public class Device
             $"Device (Id={Id}, Name={Name}, Brand={Brand}, Weight={Weight}, PurchaseDate={PurchaseDate}, DeviceStatus={DeviceStatus})";
     }
 
-    public readonly int Id;
+    public int Id { get; }
     protected readonly string Name;
     protected readonly string Brand;
     protected readonly double Weight;
